@@ -26,9 +26,6 @@ Vagrant.configure("2") do |config|
   # Configuraci<97>n de masters
   (1..3).each do |i|
     config.vm.define "master#{i}-almalinux8-k8s" do |master|
-    config.vm.provision "file", source: "./password/password.txt", destination: "/tmp/password.txt"
-    config.vm.provision "file", source: "./ansible_conf/ansible.cfg", destination: "/tmp/ansible.cfg"
-    config.vm.provision "file", source: "../ansible", destination: "/tmp/"
       master.vm.provider "virtualbox" do |vb|
         vb.name = "master#{i}-almalinux8-k8s"
         vb.cpus = 1
@@ -38,7 +35,7 @@ Vagrant.configure("2") do |config|
       master.vm.hostname = "master#{i}.192.168.1.#{base_ip_masters + i}.nip.io"
       master.vm.network "public_network", bridge:"eno1", ip: "192.168.1.#{base_ip_masters + i}"
       master.vm.disk :disk, size: "40GB", primary: true
-      master.vm.provision "shell", path: "./bastion/configbastion.sh"
+      master.vm.provision "shell", path: "./bastion/config.sh"
     end
   end
 
@@ -73,5 +70,22 @@ Vagrant.configure("2") do |config|
       worker.vm.disk :disk, size: "20GB", primary: true
       worker.vm.provision "shell", path: "./nodes/config.sh"
     end
+  end
+end
+
+
+config.vm.define "bastion" do |bastion|
+  bastion.vm.provision "file", source: "./password/password.txt", destination: "/tmp/password.txt"
+  bastion.vm.provision "file", source: "./ansible_conf/ansible.cfg", destination: "/tmp/ansible.cfg"
+  bastion.vm.provision "file", source: "../ansible", destination: "/tmp/"  
+  bastion.vm.box = "almalinux/8"
+  bastion.vm.hostname = "bastion.192.168.1.159.nip.io"
+  bastion.vm.network "public_network",bridge:"eno1",ip: "192.168.1.159"
+  bastion.vm.provision "shell", path: "./nodes/configbastion"
+  bastion.vm.provider "virtualbox" do |v|
+      v.customize ['modifyvm', :id, '--groups', '/k8svanilla/bastion']
+      v.name = "bastion-k8s"
+      v.memory = 512
+      v.cpus = 1
   end
 end

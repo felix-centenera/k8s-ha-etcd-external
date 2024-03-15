@@ -30,6 +30,6 @@ for host in  lb-one.192.168.1.149.nip.io  \
             etcd3.192.168.1.155.nip.io \
             worker1.192.168.1.156.nip.io \
             worker1.192.168.1.157.nip.io \
-            master1.192.168.1.150.nip.io; \
+            bastion.192.168.1.159.nip.io; \
             do sshpass -f /tmp/password.txt ssh-copy-id -o "StrictHostKeyChecking no" -f $host;  \
             done
