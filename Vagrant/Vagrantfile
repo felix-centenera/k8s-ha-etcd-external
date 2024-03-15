@@ -81,7 +81,7 @@ Vagrant.configure("2") do |config|
       bastion.vm.box = "almalinux/8"
       bastion.vm.hostname = "bastion.192.168.1.159.nip.io"
       bastion.vm.network "public_network",bridge:"eno1",ip: "192.168.1.159"
-      bastion.vm.provision "shell", path: "./nodes/configbastion"
+      bastion.vm.provision "shell", path: "./nodes/configbastion.sh"
       bastion.vm.provider "virtualbox" do |v|
           v.customize ['modifyvm', :id, '--groups', '/k8svanilla/bastion']
           v.name = "bastion-k8s"
